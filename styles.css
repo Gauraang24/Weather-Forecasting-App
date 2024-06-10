@@ -1,0 +1,58 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+}
+
+.weather-input {
+    width: 40%;
+    position: fixed;
+    inset: 0;
+    background: #78c1f3;
+    padding: 1rem 2.5rem;
+}
+
+.input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin: 2rem 0;
+}
+
+.input-group input {
+    background: #f8f8f8;
+    text-transform: capitalize;
+    padding: 1rem;
+    font-size: 15px;
+    border-radius: 6px;
+    width: 100%;
+    outline: none;
+    border: none;
+}
+
+.input-group .converter {
+    position: absolute;
+    right: 45px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.input-group .fa-search {
+    position: absolute;
+    right: 15px;
+    color: #909090;
+    cursor: pointer;
+    font-size: 22px;
+
+}
