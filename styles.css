@@ -56,3 +56,42 @@ body {
     font-size: 22px;
 
 }
+
+.weather-output {
+    width: 60%;
+    position: fixed;
+    inset: 0;
+    margin-left: 40%;
+    padding: 2rem;
+    background: #f6f6f6;
+    overflow: auto;
+}
+
+.Highlight {
+    display: grid;
+    grid-template-columns: repeat(2, 350px);
+    grid-auto-flow: row;
+    row-gap: 1rem;
+    column-gap: 10px;
+}
+
+.Highlight div {
+    height: 200px;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: #78c1f3;
+    border-radius: 20px;
+    padding: 1rem;
+}
+
+.Highlight i {
+    font-size: 45px;
+}
+
+.sun span {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+}
