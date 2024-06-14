@@ -15,8 +15,8 @@ const UVValue = document.getElementById("UVValue");
 const PValue = document.getElementById("PValue");
 const Forecast = document.querySelector(".Forecast");
 
-const WEATHER_API_ENDPOINT = `https://api.openweathermap.org/data/2.5/weather?appid=47fca7cebc4712d5bf85f8a22e778760&q=`;
-const WEATHER_DATA_ENDPOINT = "https://api.openweathermap.org/data/3.0/onecall?appid=47fca7cebc4712d5bf85f8a22e778760&exclude=minutely&units=metric&"
+const WEATHER_API_ENDPOINT = `https://api.openweathermap.org/data/2.5/weather?appid=335b8ba20f78d2274b86111fb4f53a25&q=`;
+const WEATHER_DATA_ENDPOINT = "https://api.openweathermap.org/data/3.0/onecall?appid=335b8ba20f78d2274b86111fb4f53a25&exclude=minutely&units=metric&"
 
 function findUserLocation() {
     fetch(WEATHER_API_ENDPOINT + userLocation.value)
@@ -30,23 +30,52 @@ function findUserLocation() {
 
             city.innerHTML = data.name + ', ' + data?.sys?.country;
             weatherIcon.style.background = `url(https://openweathermap.org/img/wn/${data?.weather[0]?.icon}@2x.png)`
+
             fetch(WEATHER_DATA_ENDPOINT + `lon=${data.coord.lon}&lat=${data.coord.lat}`)
                 .then((res) => res.json())
                 .then((data) => {
-                    console.log(data);
-
-                    temperature.innerHTML = data.current.temp
+                    console.log("2nd apo", data)
+                    temperature.innerHTML = data?.current?.temp
                     feelsLike.innerHTML = 'Feels like ' + data?.current?.feels_like
-                    description.innerHTML = `<i class='fa-brands fa-cloudversify'></i> &nbsp;` + data.current.weather[0]?.description;
+                    description.innerHTML = `<i class='fa-brands fa-cloudversify'></i> &nbsp;` + data?.current.weather[0]?.description;
 
-                    HValue.innerHTML = Math.round(data.current.humidity) + '<span>%</span>'
-                    WValue.innerHTML = Math.round(data.current.wind_speed) + '<span>m/s</span>'
-                    SRValue.innerHTML = ''
-                    SSValue.innerHTML = ''
+                    const options = {
+                        weekday: 'long',
+                        month: "long",
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        hour12: true
+                    }
+                    date.innerHTML = getLongFormatDateValue(
+                        data.current.dt,
+                        data.timezone_offset,
+                        options
+                    )
+
+                    HValue.innerHTML = Math.round(data?.current?.humidity) + '<span>%</span>';
+                    WValue.innerHTML = Math.round(data?.current?.wind_speed) + '<span>m/s</span>';
+                    const options1 = {
+                        hour: 'numeric',
+                        minute: "numeric",
+                        hour12: true
+                    }
+                    SRValue.innerHTML = getLongFormatDateValue(data.current.sunrise, data.timezone_offset, options1)
+                    SSValue.innerHTML = getLongFormatDateValue(data.current.sunset, data.timezone_offset, options1)
 
                     CValue.innerHTML = Math.round(data?.current?.humidity) + '<span>%</span>'
                     UVValue.innerHTML = Math.round(data?.current?.uvi)
                     PValue.innerHTML = Math.round(data?.current?.pressure) + '<span>hPa</span>'
                 })
         })
+}
+
+
+function formatUnixTime(dtValue, offSet, options = {}) {
+    const date = new Date((dtValue + offSet) * 1000);
+    return date.toLocaleTimeString([], { timeZone: 'UTC', ...options })
+}
+
+function getLongFormatDateValue(dtValue, offSet, options) {
+    return formatUnixTime(dtValue, offSet, options)
 }
