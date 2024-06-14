@@ -19,6 +19,7 @@ const WEATHER_API_ENDPOINT = `https://api.openweathermap.org/data/2.5/weather?ap
 const WEATHER_DATA_ENDPOINT = "https://api.openweathermap.org/data/3.0/onecall?appid=335b8ba20f78d2274b86111fb4f53a25&exclude=minutely&units=metric&"
 
 function findUserLocation() {
+    Forecast.innerHTML = '';
     fetch(WEATHER_API_ENDPOINT + userLocation.value)
         .then((res) => res.json())
         .then((data) => {
@@ -66,6 +67,24 @@ function findUserLocation() {
                     CValue.innerHTML = Math.round(data?.current?.humidity) + '<span>%</span>'
                     UVValue.innerHTML = Math.round(data?.current?.uvi)
                     PValue.innerHTML = Math.round(data?.current?.pressure) + '<span>hPa</span>'
+
+                    //Daily Section
+                    data.daily.forEach((weather) => {
+                        let div = document.createElement('div')
+
+                        const options = {
+                            weekday: 'long',
+                            month: 'long',
+                            day: 'numeric',
+                        }
+
+                        let daily = getLongFormatDateValue(weather.dt, 0, options).split(' at ')
+                        div.innerHTML = daily[0]
+                        div.innerHTML += `<img src='https://openweathermap.org/img/wn/${weather?.weather[0]?.icon}@2x.png' />`
+                        div.innerHTML += `<p class='forecase-desc'>${weather.weather[0].description}</p>`
+
+                        Forecast.append(div)
+                    })
                 })
         })
 }

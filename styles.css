@@ -98,7 +98,16 @@ body {
     column-gap: 10px;
 }
 
-.Highlight div {
+.Forecast {
+    display: grid;
+    grid-template-columns: repeat(4, 260px);
+    grid-auto-flow: row;
+    row-gap: 1rem;
+    column-gap: 10px;
+}
+
+.Highlight div,
+.Forecast div {
     height: 200px;
     display: grid;
     align-items: center;
