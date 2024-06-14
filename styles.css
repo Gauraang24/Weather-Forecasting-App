@@ -4,6 +4,14 @@
     box-sizing: border-box;
 }
 
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #83838398;
+}
+
 body {
     height: 100vh;
 }
@@ -24,7 +32,7 @@ body {
 .weatherIcon {
     background-position: 50% !important;
     background-repeat: no-repeat !important;
-    background-size: contain;
+    background-size: contain !important;
     display: block;
     height: 25%;
     margin: 2rem auto;
@@ -90,9 +98,14 @@ body {
     font-weight: 300;
 }
 
+.temperature span {
+    font-size: 2rem;
+    margin-top: 20px;
+}
+
 .Highlight {
     display: grid;
-    grid-template-columns: repeat(2, 350px);
+    grid-template-columns: repeat(2, auto);
     grid-auto-flow: row;
     row-gap: 1rem;
     column-gap: 10px;
@@ -100,7 +113,7 @@ body {
 
 .Forecast {
     display: grid;
-    grid-template-columns: repeat(4, 260px);
+    grid-template-columns: repeat(4, auto);
     grid-auto-flow: row;
     row-gap: 1rem;
     column-gap: 10px;
@@ -126,4 +139,20 @@ body {
     align-items: center;
     display: flex;
     gap: 10px;
+}
+
+.forecast-desc {
+    color: #7f7f7f;
+    font-size: 0.8rem;
+    text-align: center;
+    padding-bottom: 5px;
+    font-style: italic;
+}
+
+.description i {
+    font-size: 25px;
+}
+
+.heading {
+    margin: 1rem 0;
 }

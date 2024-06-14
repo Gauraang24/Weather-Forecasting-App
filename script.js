@@ -36,7 +36,7 @@ function findUserLocation() {
                 .then((res) => res.json())
                 .then((data) => {
                     console.log("2nd apo", data)
-                    temperature.innerHTML = data?.current?.temp
+                    temperature.innerHTML = TempConverter(data?.current?.temp)
                     feelsLike.innerHTML = 'Feels like ' + data?.current?.feels_like
                     description.innerHTML = `<i class='fa-brands fa-cloudversify'></i> &nbsp;` + data?.current.weather[0]?.description;
 
@@ -82,6 +82,7 @@ function findUserLocation() {
                         div.innerHTML = daily[0]
                         div.innerHTML += `<img src='https://openweathermap.org/img/wn/${weather?.weather[0]?.icon}@2x.png' />`
                         div.innerHTML += `<p class='forecase-desc'>${weather.weather[0].description}</p>`
+                        div.innerHTML += `<span>${TempConverter(weather.temp.min)}&nbsp;<span>${TempConverter(weather.temp.max)}</span></span>`
 
                         Forecast.append(div)
                     })
@@ -97,4 +98,16 @@ function formatUnixTime(dtValue, offSet, options = {}) {
 
 function getLongFormatDateValue(dtValue, offSet, options) {
     return formatUnixTime(dtValue, offSet, options)
+}
+function TempConverter(temp) {
+    let tempValue = Math.round(temp);
+    let message = ''
+    if (converter.value === '°C') {
+        message = tempValue + '<span>' + '\xB0C</span>'
+    } else {
+        let ctof = (tempValue * 9) / 5 + 32;
+        message = ctof + '<span>' + '\xB0F</span>'
+    }
+    console.log('message', message)
+    return message
 }
