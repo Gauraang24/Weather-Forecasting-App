@@ -22,7 +22,7 @@
       <div class="weather-input">
         <div class="input-group">
           <input type="text" name="" placeholder="Search" id="userLocation" />
-          <select name="" class="converter" id="converter">
+          <select title="Temp-unit" name="" class="converter" id="converter">
             <option>°C</option>
             <option>°F</option>
           </select>
@@ -40,6 +40,7 @@
           </button>
         </div>
         <select
+          title="Selected City"
           id="recentSearches"
           style="display: none"
           onchange="selectCity()"

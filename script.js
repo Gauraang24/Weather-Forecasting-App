@@ -128,7 +128,8 @@ function updateDetailedWeather(weatherData) {
 
     temperature.innerHTML = TempConverter(weatherData.current.temp);
     feelsLike.innerHTML = `Feels like ${TempConverter(weatherData.current.feels_like)}`;
-    description.innerHTML = `<i class='fa-brands fa-cloudversify'></i> &nbsp;${weatherData.current.weather[0].description}<hr />`;
+    description.innerHTML = `<i class='fa-brands fa-cloudversify'></i> &nbsp;${weatherData.current.weather[0].description}
+    <hr />`;
     date.innerHTML = getLongFormatDateValue(weatherData.current.dt, weatherData.timezone_offset, options);
 
     HValue.innerHTML = `${Math.round(weatherData.current.humidity)}<span>%</span>`;
@@ -177,6 +178,8 @@ function findUserLocation() {
                 return;
             }
             updateWeather(data);
+            // Add the searched location to recent searches
+            updateRecentSearches(location);
             return fetch(WEATHER_DATA_ENDPOINT + `lon=${data.coord.lon}&lat=${data.coord.lat}`);
         })
         .then(handleResponse)
@@ -184,6 +187,16 @@ function findUserLocation() {
         .catch(handleError)
         .finally(hideLoading);
 }
+
+// Ensure the "recent searches" select element triggers the selectCity function on change
+elements.recentSearches.addEventListener('change', selectCity);
+
+// Ensure the input field triggers the findUserLocation function on pressing Enter
+elements.userLocation.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        findUserLocation();
+    }
+});
 
 
 function formatUnixTime(dtValue, offSet, options = {}) {
