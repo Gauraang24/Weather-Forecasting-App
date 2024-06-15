@@ -19,11 +19,42 @@ const elements = {
     CValue: getById("CValue"),
     UVValue: getById("UVValue"),
     PValue: getById("PValue"),
-    Forecast: getBySelector(".Forecast")
+    Forecast: getBySelector(".Forecast"),
+    recentSearches: getById("recentSearches"),
 };
 
 const WEATHER_API_ENDPOINT = `https://api.openweathermap.org/data/2.5/weather?appid=335b8ba20f78d2274b86111fb4f53a25&q=`;
 const WEATHER_DATA_ENDPOINT = "https://api.openweathermap.org/data/3.0/onecall?appid=335b8ba20f78d2274b86111fb4f53a25&exclude=minutely&units=metric&";
+
+// Load recent searches from localStorage
+document.addEventListener('DOMContentLoaded', loadRecentSearches);
+
+function loadRecentSearches() {
+    const recentSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
+    if (recentSearches.length) {
+        elements.recentSearches.style.display = 'block';
+        elements.recentSearches.innerHTML = recentSearches.map(city => `<option value="${city}">${city}</option>`).join('');
+    } else {
+        elements.recentSearches.style.display = 'none';
+    }
+}
+
+function updateRecentSearches(city) {
+    let recentSearches = JSON.parse(localStorage.getItem('recentSearches')) || [];
+    if (!recentSearches.includes(city)) {
+        recentSearches.push(city);
+        if (recentSearches.length > 5) {
+            recentSearches.shift(); // Keep only last 5 searches
+        }
+        localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
+        loadRecentSearches();
+    }
+}
+function selectCity() {
+    elements.userLocation.value = elements.recentSearches.value;
+    findUserLocation();
+}
+
 
 // Add event listener for the "Current Location" button
 getById('current-location-btn').addEventListener('click', () => {
@@ -114,9 +145,7 @@ function updateForecast(dailyWeather, timezone_offset) {
 }
 
 function findUserLocation() {
-    elements.Forecast.innerHTML = ''; // Clear previous forecast data
     const location = elements.userLocation.value.trim();
-
     if (!location) {
         alert('Please enter a location');
         return;
@@ -125,17 +154,19 @@ function findUserLocation() {
     fetch(WEATHER_API_ENDPOINT + location)
         .then(handleResponse)
         .then(data => {
-            if (data.cod != 200) {
+            if (data.cod !== 200) {
                 alert(data.message);
                 return;
             }
             updateWeather(data);
+            updateRecentSearches(data.name);
             return fetch(WEATHER_DATA_ENDPOINT + `lon=${data.coord.lon}&lat=${data.coord.lat}`);
         })
         .then(handleResponse)
         .then(updateDetailedWeather)
         .catch(handleError);
 }
+
 
 function formatUnixTime(dtValue, offSet, options = {}) {
     return new Date((dtValue + offSet) * 1000).toLocaleTimeString([], { timeZone: 'UTC', ...options });

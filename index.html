@@ -30,7 +30,12 @@
           </select>
           <i class="fa fa-search" onclick="findUserLocation()"></i>
         </div>
-        <button id="current-location-btn">Get Current Location</button>
+        <button id="current-location-btn">Current Location</button>
+        <select
+          id="recentSearches"
+          style="display: none"
+          onchange="selectCity()"
+        ></select>
 
         <div class="weatherIcon"></div>
         <h2 class="temperature"></h2>
