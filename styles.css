@@ -72,11 +72,16 @@ body {
 
 .input-group .converter {
     position: absolute;
-    right: 45px;
+    right: 10px;
     border: none;
     outline: none;
     cursor: pointer;
     font-size: 18px;
+}
+
+.search-buttons {
+    display: flex;
+    gap: 10px;
 }
 
 .input-group .fa-search {
@@ -106,8 +111,7 @@ body {
     padding: 10px 0;
 }
 
-#current-location-btn {
-    width: 100%;
+.current-location-btn {
     height: 55px;
     border-radius: 7px;
     background: #313131;
@@ -117,7 +121,15 @@ body {
     border: 1px solid #81818140;
 }
 
-#current-location-btn:active {
+.current-location-btn-search {
+    width: 20%
+}
+
+.current-location-btn-location {
+    width: 80%;
+}
+
+.current-location-btn:active {
     color: rgb(107, 186, 255);
     border: 1px solid rgb(107, 186, 255);
 }

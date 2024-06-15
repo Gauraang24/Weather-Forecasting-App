@@ -18,19 +18,24 @@
     <div class="container">
       <div class="weather-input">
         <div class="input-group">
-          <input
-            type="text"
-            name=""
-            placeholder="Search for places..."
-            id="userLocation"
-          />
+          <input type="text" name="" placeholder="Search" id="userLocation" />
           <select name="" class="converter" id="converter">
             <option>°C</option>
             <option>°F</option>
           </select>
-          <i class="fa fa-search" onclick="findUserLocation()"></i>
         </div>
-        <button id="current-location-btn">Current Location</button>
+        <div class="search-buttons">
+          <button class="current-location-btn current-location-btn-search">
+            <i class="fa fa-search" onclick="findUserLocation()"></i>
+          </button>
+          <button
+            id="current-location-btn"
+            class="current-location-btn current-location-btn-location"
+          >
+            <i class="fa fa-location" onclick="findUserLocation()"></i> Current
+            Location
+          </button>
+        </div>
         <select
           id="recentSearches"
           style="display: none"
