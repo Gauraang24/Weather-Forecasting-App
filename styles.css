@@ -202,6 +202,20 @@ body {
     margin: 1rem 0;
 }
 
+.loading {
+    display: none;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    color: white;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 1rem 2rem;
+    border-radius: 10px;
+}
+
+
 @media (max-width: 900px) {
     .container {
         flex-direction: column;

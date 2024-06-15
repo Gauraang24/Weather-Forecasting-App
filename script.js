@@ -21,7 +21,18 @@ const elements = {
     PValue: getById("PValue"),
     Forecast: getBySelector(".Forecast"),
     recentSearches: getById("recentSearches"),
+    loading: getById("loading")
 };
+
+//Loading State
+
+function showLoading() {
+    elements.loading.style.display = 'block';
+}
+
+function hideLoading() {
+    elements.loading.style.display = 'none';
+}
 
 const WEATHER_API_ENDPOINT = `https://api.openweathermap.org/data/2.5/weather?appid=335b8ba20f78d2274b86111fb4f53a25&q=`;
 const WEATHER_DATA_ENDPOINT = "https://api.openweathermap.org/data/3.0/onecall?appid=335b8ba20f78d2274b86111fb4f53a25&exclude=minutely&units=metric&";
@@ -80,6 +91,7 @@ function showError(error) {
 }
 
 function fetchWeatherDataByCoordinates(lat, lon) {
+    showLoading();
     const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=335b8ba20f78d2274b86111fb4f53a25&units=metric`;
 
     fetch(url)
@@ -90,7 +102,8 @@ function fetchWeatherDataByCoordinates(lat, lon) {
         })
         .then(handleResponse)
         .then(updateDetailedWeather)
-        .catch(handleError);
+        .catch(handleError)
+        .finally(hideLoading);
 }
 
 function handleResponse(res) {
@@ -145,26 +158,31 @@ function updateForecast(dailyWeather, timezone_offset) {
 }
 
 function findUserLocation() {
+    showLoading();
+    elements.Forecast.innerHTML = ''; // Clear previous forecast data
     const location = elements.userLocation.value.trim();
+
     if (!location) {
         alert('Please enter a location');
+        hideLoading();
         return;
     }
 
     fetch(WEATHER_API_ENDPOINT + location)
         .then(handleResponse)
         .then(data => {
-            if (data.cod !== 200) {
+            if (data.cod != 200) {
                 alert(data.message);
+                hideLoading();
                 return;
             }
             updateWeather(data);
-            updateRecentSearches(data.name);
             return fetch(WEATHER_DATA_ENDPOINT + `lon=${data.coord.lon}&lat=${data.coord.lat}`);
         })
         .then(handleResponse)
         .then(updateDetailedWeather)
-        .catch(handleError);
+        .catch(handleError)
+        .finally(hideLoading);
 }
 
 
