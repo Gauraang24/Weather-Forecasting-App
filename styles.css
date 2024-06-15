@@ -2,6 +2,7 @@
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
 ::-webkit-scrollbar {
@@ -25,8 +26,9 @@ body {
     width: 25%;
     position: fixed;
     inset: 0;
-    background: #78c1f3;
     padding: 1rem 2.5rem;
+    background: #1D1C1F;
+    color: #f6f6f6;
 }
 
 .weatherIcon {
@@ -80,8 +82,9 @@ body {
     inset: 0;
     margin-left: 25%;
     padding: 2rem;
-    background: #f6f6f6;
+    background: #131214;
     overflow: auto;
+    color: aliceblue;
 }
 
 .weather-input .feelsLike,
@@ -89,6 +92,22 @@ body {
 .weather-input .date,
 .weather-input .city {
     padding: 10px 0;
+}
+
+#current-location-btn {
+    width: 100%;
+    height: 55px;
+    border-radius: 7px;
+    background: #313131;
+    font-size: 16px;
+    font-weight: 600;
+    color: aliceblue;
+    border: 1px solid #81818140;
+}
+
+#current-location-btn:active {
+    color: rgb(107, 186, 255);
+    border: 1px solid rgb(107, 186, 255);
 }
 
 .temperature {
@@ -121,12 +140,13 @@ body {
 
 .Highlight div,
 .Forecast div {
-    height: 200px;
+    height: auto;
+    min-height: 150px;
     display: grid;
     align-items: center;
     justify-content: center;
     text-align: center;
-    background-color: #78c1f3;
+    background: #1f1d22;
     border-radius: 20px;
     padding: 1rem;
 }

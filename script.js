@@ -1,118 +1,144 @@
-const userLocation = document.getElementById('userLocation');
-const converter = document.getElementById("converter");
-const weatherIcon = document.querySelector('.weatherIcon');
-const temperature = document.querySelector(".temperature");
-const feelsLike = document.querySelector(".feelsLike");
-const description = document.querySelector(".description");
-const date = document.querySelector(".date");
-const city = document.querySelector(".city");
-const HValue = document.getElementById("HValue");
-const WValue = document.getElementById("WValue");
-const SRValue = document.getElementById("SRValue");
-const SSValue = document.getElementById("SSValue");
-const CValue = document.getElementById("CValue");
-const UVValue = document.getElementById("UVValue");
-const PValue = document.getElementById("PValue");
-const Forecast = document.querySelector(".Forecast");
+// Get multiple elements by their ids
+const getById = (id) => document.getElementById(id);
+// Get multiple elements by their selectors
+const getBySelector = (selector) => document.querySelector(selector);
+
+const elements = {
+    userLocation: getById('userLocation'),
+    converter: getById("converter"),
+    weatherIcon: getBySelector('.weatherIcon'),
+    temperature: getBySelector(".temperature"),
+    feelsLike: getBySelector(".feelsLike"),
+    description: getBySelector(".description"),
+    date: getBySelector(".date"),
+    city: getBySelector(".city"),
+    HValue: getById("HValue"),
+    WValue: getById("WValue"),
+    SRValue: getById("SRValue"),
+    SSValue: getById("SSValue"),
+    CValue: getById("CValue"),
+    UVValue: getById("UVValue"),
+    PValue: getById("PValue"),
+    Forecast: getBySelector(".Forecast")
+};
 
 const WEATHER_API_ENDPOINT = `https://api.openweathermap.org/data/2.5/weather?appid=335b8ba20f78d2274b86111fb4f53a25&q=`;
 const WEATHER_DATA_ENDPOINT = "https://api.openweathermap.org/data/3.0/onecall?appid=335b8ba20f78d2274b86111fb4f53a25&exclude=minutely&units=metric&";
 
-function findUserLocation() {
-    Forecast.innerHTML = ''; // Clear previous forecast data
-    const location = userLocation.value.trim();
+// Add event listener for the "Current Location" button
+getById('current-location-btn').addEventListener('click', () => {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition, showError);
+    } else {
+        alert('Geolocation is not supported by this browser.');
+    }
+});
 
-    // Check if location input is empty
+function showPosition(position) {
+    fetchWeatherDataByCoordinates(position.coords.latitude, position.coords.longitude);
+}
+
+function showError(error) {
+    const errorMessages = {
+        [error.PERMISSION_DENIED]: "User denied the request for Geolocation.",
+        [error.POSITION_UNAVAILABLE]: "Location information is unavailable.",
+        [error.TIMEOUT]: "The request to get user location timed out.",
+        [error.UNKNOWN_ERROR]: "An unknown error occurred."
+    };
+    alert(errorMessages[error.code] || "An unknown error occurred.");
+}
+
+function fetchWeatherDataByCoordinates(lat, lon) {
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=335b8ba20f78d2274b86111fb4f53a25&units=metric`;
+
+    fetch(url)
+        .then(handleResponse)
+        .then(data => {
+            updateWeather(data);
+            return fetch(WEATHER_DATA_ENDPOINT + `lon=${data.coord.lon}&lat=${data.coord.lat}`);
+        })
+        .then(handleResponse)
+        .then(updateDetailedWeather)
+        .catch(handleError);
+}
+
+function handleResponse(res) {
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    return res.json();
+}
+
+function handleError(error) {
+    console.error("Error fetching data:", error);
+    alert('Error fetching data.');
+}
+
+function updateWeather(data) {
+    elements.city.innerHTML = `${data.name}, ${data.sys.country}`;
+    elements.weatherIcon.style.background = `url(https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png)`;
+}
+
+function updateDetailedWeather(weatherData) {
+    const { temperature, feelsLike, description, date, HValue, WValue, SRValue, SSValue, CValue, UVValue, PValue, Forecast } = elements;
+    const options = { weekday: 'long', month: "long", day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true };
+    const options1 = { hour: 'numeric', minute: "numeric", hour12: true };
+
+    temperature.innerHTML = TempConverter(weatherData.current.temp);
+    feelsLike.innerHTML = `Feels like ${TempConverter(weatherData.current.feels_like)}`;
+    description.innerHTML = `<i class='fa-brands fa-cloudversify'></i> &nbsp;${weatherData.current.weather[0].description}`;
+    date.innerHTML = getLongFormatDateValue(weatherData.current.dt, weatherData.timezone_offset, options);
+
+    HValue.innerHTML = `${Math.round(weatherData.current.humidity)}<span>%</span>`;
+    WValue.innerHTML = `${Math.round(weatherData.current.wind_speed)}<span>m/s</span>`;
+    SRValue.innerHTML = getLongFormatDateValue(weatherData.current.sunrise, weatherData.timezone_offset, options1);
+    SSValue.innerHTML = getLongFormatDateValue(weatherData.current.sunset, weatherData.timezone_offset, options1);
+
+    CValue.innerHTML = `${Math.round(weatherData.current.clouds)}<span>%</span>`;
+    UVValue.innerHTML = Math.round(weatherData.current.uvi);
+    PValue.innerHTML = `${Math.round(weatherData.current.pressure)}<span>hPa</span>`;
+
+    updateForecast(weatherData.daily, weatherData.timezone_offset);
+}
+
+function updateForecast(dailyWeather, timezone_offset) {
+    elements.Forecast.innerHTML = '';
+    dailyWeather.forEach((weather) => {
+        const div = document.createElement('div');
+        const options = { weekday: 'long', month: 'long', day: 'numeric' };
+        const daily = getLongFormatDateValue(weather.dt, timezone_offset, options).split(' at ');
+
+        div.innerHTML = `${daily[0]} <img src='https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png' />
+                         <p class='forecast-desc'>${weather.weather[0].description}</p>
+                         <span>${TempConverter(weather.temp.min)}&nbsp;<span>${TempConverter(weather.temp.max)}</span></span>`;
+        elements.Forecast.append(div);
+    });
+}
+
+function findUserLocation() {
+    elements.Forecast.innerHTML = ''; // Clear previous forecast data
+    const location = elements.userLocation.value.trim();
+
     if (!location) {
         alert('Please enter a location');
         return;
     }
 
     fetch(WEATHER_API_ENDPOINT + location)
-        .then((res) => {
-            if (!res.ok) {
-                throw new Error(`HTTP error! status: ${res.status}`);
-            }
-            return res.json();
-        })
-        .then((data) => {
-            if (data.cod != 200) { // Handle non-successful responses
+        .then(handleResponse)
+        .then(data => {
+            if (data.cod != 200) {
                 alert(data.message);
                 return;
             }
-
-            city.innerHTML = `${data.name}, ${data?.sys?.country}`;
-            weatherIcon.style.background = `url(https://openweathermap.org/img/wn/${data?.weather[0]?.icon}@2x.png)`;
-
-            fetch(WEATHER_DATA_ENDPOINT + `lon=${data.coord.lon}&lat=${data.coord.lat}`)
-                .then((res) => {
-                    if (!res.ok) {
-                        throw new Error(`HTTP error! status: ${res.status}`);
-                    }
-                    return res.json();
-                })
-                .then((weatherData) => {
-                    temperature.innerHTML = TempConverter(weatherData?.current?.temp);
-                    feelsLike.innerHTML = `Feels like ${TempConverter(weatherData?.current?.feels_like)}`;
-                    description.innerHTML = `<i class='fa-brands fa-cloudversify'></i> &nbsp;${weatherData?.current.weather[0]?.description}`;
-
-                    const options = {
-                        weekday: 'long',
-                        month: "long",
-                        day: 'numeric',
-                        hour: 'numeric',
-                        minute: 'numeric',
-                        hour12: true
-                    };
-                    date.innerHTML = getLongFormatDateValue(weatherData.current.dt, weatherData.timezone_offset, options);
-
-                    HValue.innerHTML = `${Math.round(weatherData?.current?.humidity)}<span>%</span>`;
-                    WValue.innerHTML = `${Math.round(weatherData?.current?.wind_speed)}<span>m/s</span>`;
-                    const options1 = {
-                        hour: 'numeric',
-                        minute: "numeric",
-                        hour12: true
-                    };
-                    SRValue.innerHTML = getLongFormatDateValue(weatherData.current.sunrise, weatherData.timezone_offset, options1);
-                    SSValue.innerHTML = getLongFormatDateValue(weatherData.current.sunset, weatherData.timezone_offset, options1);
-
-                    CValue.innerHTML = `${Math.round(weatherData?.current?.clouds)}<span>%</span>`;
-                    UVValue.innerHTML = Math.round(weatherData?.current?.uvi);
-                    PValue.innerHTML = `${Math.round(weatherData?.current?.pressure)}<span>hPa</span>`;
-
-                    //Daily Section
-                    weatherData.daily.forEach((weather) => {
-                        let div = document.createElement('div');
-
-                        const options = {
-                            weekday: 'long',
-                            month: 'long',
-                            day: 'numeric',
-                        };
-
-                        let daily = getLongFormatDateValue(weather.dt, weatherData.timezone_offset, options).split(' at ');
-                        div.innerHTML = daily[0];
-                        div.innerHTML += `<img src='https://openweathermap.org/img/wn/${weather?.weather[0]?.icon}@2x.png' />`;
-                        div.innerHTML += `<p class='forecast-desc'>${weather.weather[0].description}</p>`;
-                        div.innerHTML += `<span>${TempConverter(weather.temp.min)}&nbsp;<span>${TempConverter(weather.temp.max)}</span></span>`;
-
-                        Forecast.append(div);
-                    });
-                })
-                .catch((error) => {
-                    console.error("Error fetching weather data:", error); // Log any errors from the second fetch
-                    alert('Error fetching weather data.');
-                });
+            updateWeather(data);
+            return fetch(WEATHER_DATA_ENDPOINT + `lon=${data.coord.lon}&lat=${data.coord.lat}`);
         })
-        .catch((error) => {
-            console.error("Error fetching location data:", error); // Log any errors from the first fetch
-            alert('Error fetching location data.');
-        });
+        .then(handleResponse)
+        .then(updateDetailedWeather)
+        .catch(handleError);
 }
 
 function formatUnixTime(dtValue, offSet, options = {}) {
-    const date = new Date((dtValue + offSet) * 1000);
-    return date.toLocaleTimeString([], { timeZone: 'UTC', ...options });
+    return new Date((dtValue + offSet) * 1000).toLocaleTimeString([], { timeZone: 'UTC', ...options });
 }
 
 function getLongFormatDateValue(dtValue, offSet, options) {
@@ -120,13 +146,8 @@ function getLongFormatDateValue(dtValue, offSet, options) {
 }
 
 function TempConverter(temp) {
-    let tempValue = Math.round(temp);
-    let message = '';
-    if (converter.value === '*C') {
-        message = `${tempValue}<span>&#176;C</span>`;
-    } else {
-        let ctof = (tempValue * 9) / 5 + 32;
-        message = `${Math.round(ctof)}<span>&#176;F</span>`;
-    }
-    return message;
+    const tempValue = Math.round(temp);
+    return elements.converter.value === '°C' ?
+        `${tempValue}<span>&#176;C</span>` :
+        `${Math.round(tempValue * 9 / 5 + 32)}<span>&#176;F</span>`;
 }
