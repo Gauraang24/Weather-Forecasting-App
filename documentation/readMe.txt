@@ -21,7 +21,3 @@ Check out the live demo : https://gauraang24.github.io/Weather-Forecasting-App/
 - CSS
 - JavaScript
 - OpenWeatherMap API
-
-### NOTE
-
-Please use live server to check dropdown, it wont work on github Link
