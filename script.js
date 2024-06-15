@@ -128,7 +128,7 @@ function updateDetailedWeather(weatherData) {
 
     temperature.innerHTML = TempConverter(weatherData.current.temp);
     feelsLike.innerHTML = `Feels like ${TempConverter(weatherData.current.feels_like)}`;
-    description.innerHTML = `<i class='fa-brands fa-cloudversify'></i> &nbsp;${weatherData.current.weather[0].description}`;
+    description.innerHTML = `<i class='fa-brands fa-cloudversify'></i> &nbsp;${weatherData.current.weather[0].description}<hr />`;
     date.innerHTML = getLongFormatDateValue(weatherData.current.dt, weatherData.timezone_offset, options);
 
     HValue.innerHTML = `${Math.round(weatherData.current.humidity)}<span>%</span>`;
